@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TrProtocol.Shared/TrProtocol.Shared.shproj" Id="768417b4-d342-4006-b196-5f7178582209" />
+  <Project Path="TrProtocol.SerializerGenerator/TrProtocol.SerializerGenerator.csproj" />
+  <Project Path="TrProtocol.TestAgent/TrProtocol.TestAgent.csproj" />
+  <Project Path="TrProtocol/TrProtocol.csproj" />
+</Solution>

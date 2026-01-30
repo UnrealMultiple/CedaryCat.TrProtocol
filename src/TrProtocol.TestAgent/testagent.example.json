@@ -1,0 +1,17 @@
+{
+  "ListenPort": 7654,
+  "TargetHost": "127.0.0.1",
+  "TargetPort": 7777,
+  "RoundTrip": {
+    "Enabled": false,
+    "Dump": "window",
+    "ContextLines": 3,
+    "FullDumpThresholdBytes": 256
+  },
+  "Filters": {
+    "Direction": "all",
+    "ShowOk": false,
+    "ShowParseIssues": true,
+    "ShowRoundTripIssues": true
+  }
+}
