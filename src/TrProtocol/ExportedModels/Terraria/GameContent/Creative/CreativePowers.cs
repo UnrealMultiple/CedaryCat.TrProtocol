@@ -1,8 +1,8 @@
 ﻿namespace Terraria.GameContent.Creative;
 
-public class CreativePowers
+public abstract class CreativePowers
 {
-    public class APerPlayerTogglePower
+    public abstract class APerPlayerTogglePower
     {
         public enum SubMessageType : byte
         {

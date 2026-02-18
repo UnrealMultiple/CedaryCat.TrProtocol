@@ -1,6 +1,6 @@
 ﻿namespace Terraria.GameContent;
 
-public class LeashedEntity
+public abstract class LeashedEntity
 {
     public class NetModule
     {
