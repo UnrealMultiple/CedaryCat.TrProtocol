@@ -32,4 +32,13 @@ public partial struct SectionData : IAutoSerializable, ILengthAware
     [ArraySize(nameof(TileEntityCount))]
     [ExternalMemberValue(nameof(TileEntity.NetworkSend), false)]
     public TileEntity[] TileEntities;
+    
+    public override string ToString()
+    {
+        return $"{{Section: ({StartX}, {StartY}) | Size: {Width}x{Height} | " +
+               $"Tiles: {ComplexTileCount} | " +
+               $"Chests: {ChestCount} | " +
+               $"Signs: {SignCount} | " +
+               $"Entities: {TileEntityCount}}}";
+    }
 }

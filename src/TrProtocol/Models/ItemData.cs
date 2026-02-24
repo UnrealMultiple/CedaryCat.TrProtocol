@@ -18,4 +18,13 @@ public partial struct ItemData : IEquatable<ItemData>, IAutoSerializable
     public static bool operator ==(ItemData left, ItemData right) => left.Equals(right);
 
     public static bool operator !=(ItemData left, ItemData right) => !left.Equals(right);
+    
+    public override readonly string ToString()
+    {
+        if (ItemID <= 0) return "[Empty Item]";
+        var stackPrefix = Stack > 1 ? $"{Stack}x " : "";
+        var prefixInfo = Prefix > 0 ? $", Prefix {Prefix}" : "";
+        
+        return $"{stackPrefix}[ID {ItemID}{prefixInfo}]";
+    }
 }

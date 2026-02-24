@@ -3,4 +3,9 @@
 public partial class StartMidnightImmediately : CreativePower
 {
     public sealed override CreativePowerTypes PowerType => CreativePowerTypes.SetMidnight;
+    
+    public override string ToString()
+    {
+        return $"[Power: {PowerType}]";
+    }
 }

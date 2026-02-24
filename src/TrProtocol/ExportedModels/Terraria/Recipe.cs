@@ -9,6 +9,11 @@ namespace Terraria
             public int itemIdOrRecipeGroup;
             [Int7BitEncoded]
             public int stack;
+            
+            public override string ToString()
+            {
+                return $"{{ItemIdOrRecipeGroup: {itemIdOrRecipeGroup}, Stack: {stack}}}";
+            }
         }
     }
 }

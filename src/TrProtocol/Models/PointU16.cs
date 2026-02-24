@@ -18,4 +18,9 @@ public struct PointU16 : IPackedSerializable, IEquatable<PointU16>
     public override readonly bool Equals(object? obj) => obj is PointU16 other && Equals(other);
     public override readonly int GetHashCode() => packedValue.GetHashCode();
     public readonly bool Equals(PointU16 other) => packedValue == other.packedValue;
+    
+    public readonly override string ToString()
+    {
+        return $"{{X:{X} Y:{Y} (0x{packedValue:X8})}}";
+    }
 }

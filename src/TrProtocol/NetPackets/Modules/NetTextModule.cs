@@ -29,10 +29,23 @@ public class TextC2S
 {
     public string? Command;
     public string? Text;
+    
+    public override string ToString()
+    {
+        return !string.IsNullOrEmpty(Command) ? $"/{Command} {Text}" : $"\"{Text}\"";
+    }
 }
 public class TextS2C
 {
     public byte PlayerSlot;
     public NetworkText? Text;
     public Color Color;
+    
+    public override string ToString()
+    {
+        var hexColor = $"#{Color.R:X2}{Color.G:X2}{Color.B:X2}";
+        var content = Text?.ToString() ?? "empty";
+        
+        return $"Player[{PlayerSlot}] ({hexColor}): \"{content}\"";
+    }
 }

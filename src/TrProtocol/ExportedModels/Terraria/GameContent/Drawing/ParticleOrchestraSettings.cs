@@ -30,4 +30,11 @@ public struct ParticleOrchestraSettings
         UniqueInfoPiece = reader.ReadInt32();
         IndexOfPlayerWhoInvokedThis = reader.ReadByte();
     }
+    
+    public override string ToString()
+    {
+        return $"{{ Pos: {PositionInWorld.X:F1}, {PositionInWorld.Y:F1} | " +
+               $"Vel: {MovementVector.X:F2}, {MovementVector.Y:F2} | " +
+               $"Info: {UniqueInfoPiece} | Player: {IndexOfPlayerWhoInvokedThis} }}";
+    }
 }

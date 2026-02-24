@@ -54,6 +54,25 @@ public class PlayerDeathReason
     [SerializeAs(typeof(byte))] public int _sourceItemPrefix;
     [Condition(nameof(Flags.HasCustomReason))]
     public string? _sourceCustomReason;
+    
+    public override string ToString()
+    {
+        var flags = Flags;
+        var parts = new List<string>();
+
+        if (flags.HasCustomReason && !string.IsNullOrEmpty(_sourceCustomReason))
+            return $"Custom: {_sourceCustomReason}";
+
+        if (flags.HasPlayerSource) parts.Add($"PlayerIndex: {_sourcePlayerIndex}");
+        if (flags.HasNPCSource) parts.Add($"NPCIndex: {_sourceNPCIndex}");
+        if (flags.HasProjectileLocalSource) parts.Add($"ProjLocalIndex: {_sourceProjectileLocalIndex}");
+        if (flags.HasProjectileType) parts.Add($"ProjType: {_sourceProjectileType}");
+        if (flags.HasItemType) parts.Add($"ItemType: {_sourceItemType}");
+        if (flags.HasItemPrefix) parts.Add($"ItemPrefix: {_sourceItemPrefix}");
+        if (flags.HasOtherSource) parts.Add($"OtherSourceIndex: {_sourceOtherIndex}");
+
+        return parts.Count == 0 ? "Unknown Reason" : $"DeathReason: {string.Join(", ", parts)}";
+    }
 }
 public struct DeathSourceFlags : IPackedSerializable
 {
