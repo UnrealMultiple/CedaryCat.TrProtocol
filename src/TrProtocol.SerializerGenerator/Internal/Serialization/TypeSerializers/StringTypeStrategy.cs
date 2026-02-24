@@ -1,3 +1,4 @@
+using TrProtocol.SerializerGenerator.Internal.Generation;
 using TrProtocol.SerializerGenerator.Internal.Utilities;
 
 namespace TrProtocol.SerializerGenerator.Internal.Serialization.TypeSerializers;
@@ -25,7 +26,10 @@ public class StringTypeStrategy : ITypeSerializerStrategy
         seriBlock.WriteLine($"CommonCode.WriteString(ref ptr_current, {memberAccess});");
         seriBlock.WriteLine();
 
-        deserBlock.WriteLine($"{memberAccess} = CommonCode.ReadString(ref ptr_current);");
+        GenerationHelpers.WriteDebugRelease(
+            deserBlock,
+            $"{memberAccess} = CommonCode.ReadString(ref ptr_current, ptr_end, nameof({context.Model.TypeName}), \"{m.MemberName}\");",
+            $"{memberAccess} = CommonCode.ReadString(ref ptr_current, ptr_end);");
         deserBlock.WriteLine();
     }
 }

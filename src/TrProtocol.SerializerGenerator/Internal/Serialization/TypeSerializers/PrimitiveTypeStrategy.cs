@@ -43,7 +43,6 @@ public class PrimitiveTypeStrategy : ITypeSerializerStrategy
             seriBlock.WriteLine($"Unsafe.Write(ptr_current, ({typeStr}){memberAccess});");
             seriBlock.WriteLine($"ptr_current = Unsafe.Add<{typeStr}>(ptr_current, 1);");
             seriBlock.WriteLine();
-
             deserBlock.WriteLine($"{memberAccess} = ({mTypeStr})Unsafe.Read<{typeStr}>(ptr_current);");
             deserBlock.WriteLine($"ptr_current = Unsafe.Add<{typeStr}>(ptr_current, 1);");
             deserBlock.WriteLine();
@@ -55,7 +54,6 @@ public class PrimitiveTypeStrategy : ITypeSerializerStrategy
             seriBlock.WriteLine($"Unsafe.Write(ptr_current, {castPrefix}{memberAccess});");
             seriBlock.WriteLine($"ptr_current = Unsafe.Add<{mTypeStr}>(ptr_current, 1);");
             seriBlock.WriteLine();
-
             deserBlock.WriteLine($"{memberAccess} = {castSuffix}Unsafe.Read<{mTypeStr}>(ptr_current);");
             deserBlock.WriteLine($"ptr_current = Unsafe.Add<{mTypeStr}>(ptr_current, 1);");
             deserBlock.WriteLine();

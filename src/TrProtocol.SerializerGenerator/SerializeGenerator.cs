@@ -54,17 +54,32 @@ public partial class SerializeGenerator : IIncrementalGenerator
             .Select(m => m.Member)
             .ToArray();
 
-        var members = orderedMembers.Where(m => m.Modifiers.Any(m => m.Text == "public")).Select(new Func<MemberDeclarationSyntax, IEnumerable<SerializationExpandContext>>(m => {
+        var members = orderedMembers.Select(new Func<MemberDeclarationSyntax, IEnumerable<SerializationExpandContext>>(m => {
+            var forceInclude = m.AttributeMatch<IncludeSerializeAttribute>();
+
             if (m is FieldDeclarationSyntax field && !field.Modifiers.Any(m => m.Text == "const")) {
+                if (!forceInclude && !field.Modifiers.Any(m => m.Text == "public")) {
+                    return [];
+                }
+
                 return field.Declaration.Variables.Select(v => new SerializationExpandContext(field, v.Identifier.Text, field.Declaration.Type, false, field.AttributeLists.ToArray()));
             }
             else if (m is PropertyDeclarationSyntax prop) {
                 if (prop.AccessorList is null) {
                     return [];
                 }
+
+                if (!forceInclude && !prop.Modifiers.Any(m => m.Text == "public")) {
+                    return [];
+                }
+
                 foreach (var name in new string[] { "get", "set" }) {
                     var access = prop.AccessorList.Accessors.FirstOrDefault(a => a.Keyword.Text == name);
-                    if (access == null || access.Modifiers.Any(m => m.Text is "private" or "protected")) {
+                    if (access == null) {
+                        return [];
+                    }
+
+                    if (!forceInclude && access.Modifiers.Any(m => m.Text is "private" or "protected")) {
                         return [];
                     }
                 }
@@ -83,17 +98,32 @@ public partial class SerializeGenerator : IIncrementalGenerator
         return new ProtocolTypeInfo(triggerDeclaration, typeSymbol.Name, members);
     }
     private static ProtocolTypeInfo Transform(TypeDeclarationSyntax typeDeclaration) {
-        var members = typeDeclaration.Members.Where(m => m.Modifiers.Any(m => m.Text == "public")).Select(new Func<MemberDeclarationSyntax, IEnumerable<SerializationExpandContext>>(m => {
+        var members = typeDeclaration.Members.Select(new Func<MemberDeclarationSyntax, IEnumerable<SerializationExpandContext>>(m => {
+            var forceInclude = m.AttributeMatch<IncludeSerializeAttribute>();
+
             if (m is FieldDeclarationSyntax field && !field.Modifiers.Any(m => m.Text == "const")) {
+                if (!forceInclude && !field.Modifiers.Any(m => m.Text == "public")) {
+                    return [];
+                }
+
                 return field.Declaration.Variables.Select(v => new SerializationExpandContext(field, v.Identifier.Text, field.Declaration.Type, false, field.AttributeLists.ToArray()));
             }
             else if (m is PropertyDeclarationSyntax prop) {
                 if (prop.AccessorList is null) {
                     return [];
                 }
+
+                if (!forceInclude && !prop.Modifiers.Any(m => m.Text == "public")) {
+                    return [];
+                }
+
                 foreach (var name in new string[] { "get", "set" }) {
                     var access = prop.AccessorList.Accessors.FirstOrDefault(a => a.Keyword.Text == name);
-                    if (access == null || access.Modifiers.Any(m => m.Text is "private" or "protected")) {
+                    if (access == null) {
+                        return [];
+                    }
+
+                    if (!forceInclude && access.Modifiers.Any(m => m.Text is "private" or "protected")) {
                         return [];
                     }
                 }

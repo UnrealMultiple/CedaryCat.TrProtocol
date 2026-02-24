@@ -13,6 +13,6 @@ public abstract partial class LeashedEntity : IAutoSerializable
     [IgnoreSerialize]
     public bool FullSync;
     public abstract Point16 AnchorPosition { get; set; }
-    public abstract unsafe void ReadContent(ref void* ptr);
+    public abstract unsafe void ReadContent(ref void* ptr, void* endPtr);
     public abstract unsafe void WriteContent(ref void* ptr);
 }

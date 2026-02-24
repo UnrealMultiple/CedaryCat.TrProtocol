@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Immutable;
 using TrProtocol.Attributes;
 using TrProtocol.SerializerGenerator.Internal.Extensions;
+using TrProtocol.SerializerGenerator.Internal.Utilities;
 
 namespace TrProtocol.SerializerGenerator.Internal.Generation;
 
@@ -62,20 +63,27 @@ internal static class GenerationHelpers
         return (externalMemberParams, externalMemberParamsCall);
     }
 
+    public static void WriteDebugRelease(BlockNode node, string debugLine, string releaseLine) {
+        node.WriteLine("#if DEBUG");
+        node.WriteLine(debugLine);
+        node.WriteLine("#else");
+        node.WriteLine(releaseLine);
+        node.WriteLine("#endif");
+    }
+
     public static bool HasWriteContent(INamedTypeSymbol typeSym) {
         return HasMethod(typeSym, "WriteContent", parameters => parameters.Length == 1
             && IsRefVoidPointer(parameters[0]));
     }
 
     public static bool HasReadContent(INamedTypeSymbol typeSym) {
-        return HasMethod(typeSym, "ReadContent", parameters => parameters.Length == 1
-            && IsRefVoidPointer(parameters[0]));
-    }
-
-    public static bool HasReadContentLengthAware(INamedTypeSymbol typeSym) {
         return HasMethod(typeSym, "ReadContent", parameters => parameters.Length == 2
             && IsRefVoidPointer(parameters[0])
             && IsVoidPointer(parameters[1]));
+    }
+
+    public static bool HasReadContentLengthAware(INamedTypeSymbol typeSym) {
+        return HasReadContent(typeSym);
     }
 
     private static bool HasMethod(INamedTypeSymbol typeSym, string methodName, Func<ImmutableArray<IParameterSymbol>, bool> parameterPredicate) {
@@ -109,4 +117,3 @@ internal static class GenerationHelpers
         return pointer.PointedAtType.SpecialType == SpecialType.System_Void;
     }
 }
-

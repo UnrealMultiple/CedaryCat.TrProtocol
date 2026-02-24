@@ -87,6 +87,7 @@ public partial struct WorldData : INetPacket
     [InitDefaultValue] public BitsByte EventInfo8;
     [InitDefaultValue] public BitsByte EventInfo9;
     [InitDefaultValue] public BitsByte EventInfo10;
+    [InitDefaultValue] public BitsByte EventInfo11;
     [InitDefaultValue] public byte SundialCooldown;
     [InitDefaultValue] public byte MoondialCooldown;
     [InitDefaultValue] public short CopperOreTier;

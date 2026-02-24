@@ -16,7 +16,7 @@ public abstract partial class TileEntity : IAutoSerializable
     [IgnoreSerialize]
     public abstract bool NetworkSend { get; set; }
 
-    public abstract unsafe void ReadContent(ref void* ptr);
+    public abstract unsafe void ReadContent(ref void* ptr, void* endPtr);
 
     public abstract unsafe void WriteContent(ref void* ptr);
 }

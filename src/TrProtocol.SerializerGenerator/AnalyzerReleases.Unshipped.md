@@ -31,3 +31,8 @@ SCG39 | TrProtocol.SerializerGenerator | Error | TerminatedArrayElementNotInline
 SCG40 | TrProtocol.SerializerGenerator | Error | TerminatedArrayInvalidTerminationKey
 SCG41 | TrProtocol.SerializerGenerator | Error | TerminatedArrayElementHasCustomSerializer
 SCG42 | TrProtocol.SerializerGenerator | Error | TerminatedArrayKeyMemberSerializeAsNotSupported
+SCG43 | TrProtocol.SerializerGenerator | Error | ConflictingIncludeIgnoreSerializeAttributes
+SCG44 | TrProtocol.SerializerGenerator | Error | LengthPrefixedArrayRankUnsupported
+SCG45 | TrProtocol.SerializerGenerator | Error | LengthPrefixedArrayInvalidLengthType
+SCG46 | TrProtocol.SerializerGenerator | Error | LengthPrefixedArrayConflictsWithArraySize
+SCG47 | TrProtocol.SerializerGenerator | Error | LengthPrefixedArrayUnsupportedCombination

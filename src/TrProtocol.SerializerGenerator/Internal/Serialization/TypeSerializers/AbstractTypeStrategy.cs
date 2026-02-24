@@ -37,6 +37,6 @@ public class AbstractTypeStrategy : ITypeSerializerStrategy
             context.MemberNullables.Add(m.MemberName);
         }
 
-        deserBlock.WriteLine($"{memberAccess} = {memberTypeSym.Name}.Read{memberTypeSym.Name}(ref ptr_current{externalMemberValueArgs});");
+        deserBlock.WriteLine($"{memberAccess} = {memberTypeSym.Name}.Read{memberTypeSym.Name}(ref ptr_current, ptr_end{externalMemberValueArgs});");
     }
 }

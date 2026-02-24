@@ -10,6 +10,7 @@ using TrProtocol.SerializerGenerator.Internal.Conditions.Optimization;
 using TrProtocol.SerializerGenerator.Internal.Diagnostics;
 using TrProtocol.SerializerGenerator.Internal.Extensions;
 using TrProtocol.SerializerGenerator.Internal.Models;
+using TrProtocol.SerializerGenerator.Internal.ReadPlan;
 using TrProtocol.SerializerGenerator.Internal.Serialization;
 using TrProtocol.SerializerGenerator.Internal.Serialization.TypeSerializers;
 using TrProtocol.SerializerGenerator.Internal.Utilities;
@@ -34,22 +35,27 @@ internal static class MemberSerializationEmitter
             BlockNode deserNode,
             INamedTypeSymbol typeSym,
             IEnumerable<(SerializationExpandContext m, string? parant_var, RoundState roundState)> memberAccesses) {
-            void EmitMergedMembers(List<(SerializationExpandContext member, ConditionNode condition, string? parentVar, BlockNode seriMemberBlock, BlockNode deserMemberBlock)> generatedMembers) {
+            void EmitMergedMembers(IReadOnlyList<ReadPlanMember> generatedMembers) {
                 if (generatedMembers.Count == 0) return;
 
                 var currentParentVar = (string?)null;
-                var buffer = new List<(SerializationExpandContext member, ConditionNode condition, string? parentVar, BlockNode seriMemberBlock, BlockNode deserMemberBlock)>();
+                var buffer = new List<ReadPlanMember>();
 
                 void Flush() {
                     if (buffer.Count == 0) return;
 
                     var blocks = AdjacentFieldMerger.MergeAdjacentConditions(
-                        buffer.Select(e => (e.member, e.condition, e.parentVar)));
+                        buffer.Select(e => (e.Member, e.Condition, e.ParentVar)));
 
+                    var membersByContext = new Dictionary<SerializationExpandContext, ReadPlanMember>(buffer.Count);
                     var memberSources = new Dictionary<SerializationExpandContext, (IReadOnlyList<SourceNode> seriSources, IReadOnlyList<SourceNode> deserSources)>(buffer.Count);
                     foreach (var e in buffer) {
-                        memberSources[e.member] = (e.seriMemberBlock.Sources, e.deserMemberBlock.Sources);
+                        membersByContext[e.Member] = e;
+                        memberSources[e.Member] = (e.SerializationBlock.Sources, e.DeserializationBlock.Sources);
                     }
+
+                    var readPlan = ReadPlanBuilder.Build(blocks, membersByContext);
+                    ReadPlanEmitter.Emit(readPlan, model.TypeName);
 
                     var seriTemp = new BlockNode(seriNode);
                     var deserTemp = new BlockNode(deserNode);
@@ -62,11 +68,11 @@ internal static class MemberSerializationEmitter
 
                 foreach (var e in generatedMembers) {
                     if (buffer.Count == 0) {
-                        currentParentVar = e.parentVar;
+                        currentParentVar = e.ParentVar;
                     }
-                    else if (e.parentVar != currentParentVar) {
+                    else if (e.ParentVar != currentParentVar) {
                         Flush();
-                        currentParentVar = e.parentVar;
+                        currentParentVar = e.ParentVar;
                     }
 
                     buffer.Add(e);
@@ -76,7 +82,7 @@ internal static class MemberSerializationEmitter
             }
 
             try {
-                var generatedMembers = new List<(SerializationExpandContext member, ConditionNode condition, string? parentVar, BlockNode seriMemberBlock, BlockNode deserMemberBlock)>();
+                var generatedMembers = new List<ReadPlanMember>();
                 foreach (var (m, parant_var, roundState) in memberAccesses) {
                     var mType = m.MemberType;
                     var mTypeStr = mType.ToString();
@@ -210,8 +216,18 @@ internal static class MemberSerializationEmitter
                         ExpandMembers,
                         transform);
 
+                    var fixedSizeExpression = roundState.IsEnumRound
+                        ? null
+                        : FixedReadSizeResolver.TryGetFixedReadSizeExpression(typeSerializerContext);
                     typeSerializerDispatcher.Serialize(typeSerializerContext, seriMemberBlock, deserMemberBlock);
-                    generatedMembers.Add((m, memberCondition, parant_var, seriMemberBlock, deserMemberBlock));
+                    generatedMembers.Add(new ReadPlanMember(
+                        m,
+                        memberCondition,
+                        parant_var,
+                        fixedSizeExpression is null ? ReadPlanNodeKind.Variable : ReadPlanNodeKind.Fixed,
+                        fixedSizeExpression,
+                        seriMemberBlock,
+                        deserMemberBlock));
 
                 }
 
