@@ -130,4 +130,11 @@ public partial struct BitsByte : IPackedSerializable
         while (item[7]);
         return list.ToArray();
     }
+    
+    public override string ToString()
+    {
+        var bitsByte = this;
+        return $"0x{(byte)this:X2} [{string.Concat(Enumerable.Range(0, 8).Select(i => bitsByte[7 - i] ? "1" : "0"))}]";
+    }
+    
 }

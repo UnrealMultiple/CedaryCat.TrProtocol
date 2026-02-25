@@ -34,6 +34,19 @@ public struct PlayerControlData : IPackedSerializable
         get => packedValue[6];
         set => packedValue[6] = value;
     }
+    
+    public override string ToString() {
+        var active = new List<string>();
+        if (ControlUp) active.Add("Up");
+        if (ControlDown) active.Add("Down");
+        if (ControlLeft) active.Add("Left");
+        if (ControlRight) active.Add("Right");
+        if (ControlJump) active.Add("Jump");
+        if (IsUsingItem) active.Add("UsingItem");
+    
+        string dir = FaceDirection ? "Right" : "Left";
+        return $"{{Controls: [{string.Join("|", active)}], Face: {dir}}}";
+    }
 }
 public struct PlayerMiscData1 : IPackedSerializable
 {
@@ -78,6 +91,19 @@ public struct PlayerMiscData1 : IPackedSerializable
         get => packedValue[7];
         set => packedValue[7] = value;
     }
+    
+    public override string ToString() {
+        var states = new List<string>();
+        if (IsUsingPulley) states.Add(PulleyDirection ? "PulleyDown" : "PulleyUp");
+        if (HasVelocity) states.Add("Moving");
+        if (IsVortexStealthActive) states.Add("Stealth");
+        if (GravityDirection) states.Add("ReverseGravity");
+        if (IsShieldRaised) states.Add("ShieldUp");
+        if (IsGhosted) states.Add("Ghost");
+        if (IsMounting) states.Add("Mounted");
+
+        return states.Count > 0 ? $"{string.Join(", ", states)}" : "Normal";
+    }
 }
 public struct PlayerMiscData2 : IPackedSerializable
 {
@@ -114,6 +140,18 @@ public struct PlayerMiscData2 : IPackedSerializable
         get => packedValue[7];
         set => packedValue[7] = value;
     }
+    
+    public override string ToString() {
+        var states = new List<string>();
+        if (IsSitting) states.Add("Sitting");
+        if (IsPettingAnimal) states.Add(IsPettedAnimalSmall ? "PettingSmall" : "PettingLarge");
+        if (IsVoidVaultEnabled) states.Add("VoidVault");
+        if (TryHoveringUp) states.Add("HoverUp");
+        if (TryHoveringDown) states.Add("HoverDown");
+        if (CanReturnWithPotionOfReturn) states.Add("CanReturn");
+    
+        return $"{(states.Count > 0 ? string.Join(", ", states) : "Idle")}";
+    }
 }
 public struct PlayerMiscData3 : IPackedSerializable
 {
@@ -145,5 +183,17 @@ public struct PlayerMiscData3 : IPackedSerializable
     public bool LastItemUseAttemptSuccess {
         get => packedValue[6];
         set => packedValue[6] = value;
+    }
+    
+    public override string ToString() {
+        var states = new List<string>();
+        if (IsSleeping) states.Add("Sleeping");
+        if (AutoReuseAllWeapons) states.Add("AutoReuse");
+        if (ControlUseTile) states.Add("UsingTile");
+        if (IsOperatingAnotherEntity) states.Add("OperatingEntity");
+        if (HasNetCameraTarget) states.Add("CamTargeted");
+        if (LastItemUseAttemptSuccess) states.Add("UseSuccess");
+
+        return $"{(states.Count > 0 ? string.Join(", ", states) : "None")}";
     }
 }

@@ -14,4 +14,15 @@ public struct SyncEquipmentDetails : IPackedSerializable
         get => packedValue[1];
         set => packedValue[1] = value;
     }
+    
+    public override string ToString()
+    {
+        if (packedValue == 0) return "[Normal]";
+
+        var states = new List<string>();
+        if (Favorited) states.Add("Favorited");
+        if (IndicateBlockedSlot) states.Add("Blocked");
+
+        return $"[{string.Join(", ", states)}]";
+    }
 }

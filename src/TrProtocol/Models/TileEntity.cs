@@ -19,4 +19,9 @@ public abstract partial class TileEntity : IAutoSerializable
     public abstract unsafe void ReadContent(ref void* ptr, void* endPtr);
 
     public abstract unsafe void WriteContent(ref void* ptr);
+    
+    public override string ToString()
+    {
+        return $"[{EntityType}] ID: {ID} | Pos: {Position.X}, {Position.Y}";
+    }
 }

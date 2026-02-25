@@ -12,4 +12,14 @@ public partial struct SquareData : IAutoSerializable
     public TileChangeType ChangeType;
     [ArraySize(nameof(Width), nameof(Height))]
     public SimpleTileData[,] Tiles;
+    
+    public override string ToString()
+    {
+        if (Width == 1 && Height == 1)
+        {
+            return $"{{(X:{TilePosX}, Y:{TilePosY}) | Type: {ChangeType} | Single Tile}}";
+        }
+        
+        return $"{{({TilePosX}, {TilePosY}) | Size: {Width}x{Height} | Type: {ChangeType}}}";
+    }
 }
