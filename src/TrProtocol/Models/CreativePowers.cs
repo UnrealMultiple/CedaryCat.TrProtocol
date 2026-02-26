@@ -7,6 +7,6 @@ namespace TrProtocol.Models;
 public abstract partial class CreativePower : IAutoSerializable
 {
     public abstract CreativePowerTypes PowerType { get; }
-    public abstract unsafe void ReadContent(ref void* ptr);
+    public abstract unsafe void ReadContent(ref void* ptr, void* endPtr);
     public abstract unsafe void WriteContent(ref void* ptr);
 }

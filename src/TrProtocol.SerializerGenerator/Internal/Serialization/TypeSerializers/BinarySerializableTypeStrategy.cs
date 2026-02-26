@@ -11,6 +11,10 @@ public class BinarySerializableTypeStrategy : ITypeSerializerStrategy
 {
     public bool StopPropagation => true;
     public bool CanHandle(TypeSerializerContext context) {
+        if (context.MemberTypeSym.AllInterfaces.Any(i => i.Name == nameof(IPackedSerializable))) {
+            return false;
+        }
+
         return context.MemberTypeSym.AllInterfaces
             .Any(i => i.Name == nameof(IBinarySerializable));
     }
@@ -43,39 +47,19 @@ public class BinarySerializableTypeStrategy : ITypeSerializerStrategy
         seriBlock.WriteLine();
 
         if (!memberTypeSym.IsAbstract) {
-            bool isLengthAware = memberTypeSym.AllInterfaces.Any(t => t.Name == nameof(ILengthAware));
-
-            if (isLengthAware) {
-                if (memberTypeSym.IsUnmanagedType) {
-                    if (externalMemberValues.Count > 0) {
-                        var variableName = $"_temp_{m.MemberName}";
-                        deserBlock.WriteLine($"var {variableName} = {memberAccess};");
-                        foreach (var m2 in externalMemberValues) {
-                            deserBlock.WriteLine($"{variableName}.{m2.memberName} = _{m2.memberName};");
-                        }
-                        deserBlock.WriteLine($"{memberAccess} = {variableName};");
+            if (memberTypeSym.IsUnmanagedType) {
+                if (externalMemberValues.Count > 0) {
+                    var variableName = $"_temp_{m.MemberName}";
+                    deserBlock.WriteLine($"var {variableName} = {memberAccess};");
+                    foreach (var m2 in externalMemberValues) {
+                        deserBlock.WriteLine($"{variableName}.{m2.memberName} = _{m2.memberName};");
                     }
-                    deserBlock.WriteLine($"{memberAccess}.ReadContent(ref ptr_current, ptr_end);");
+                    deserBlock.WriteLine($"{memberAccess} = {variableName};");
                 }
-                else {
-                    deserBlock.WriteLine($"{memberAccess} = new (ref ptr_current, ptr_end{externalMemberValueArgs});");
-                }
+                deserBlock.WriteLine($"{memberAccess}.ReadContent(ref ptr_current, ptr_end);");
             }
             else {
-                if (memberTypeSym.IsUnmanagedType) {
-                    if (externalMemberValues.Count > 0) {
-                        var variableName = $"_temp_{m.MemberName}";
-                        deserBlock.WriteLine($"var {variableName} = {memberAccess};");
-                        foreach (var m2 in externalMemberValues) {
-                            deserBlock.WriteLine($"{variableName}.{m2.memberName} = _{m2.memberName};");
-                        }
-                        deserBlock.WriteLine($"{memberAccess} = {variableName};");
-                    }
-                    deserBlock.WriteLine($"{memberAccess}.ReadContent(ref ptr_current);");
-                }
-                else {
-                    deserBlock.WriteLine($"{memberAccess} = new (ref ptr_current{externalMemberValueArgs});");
-                }
+                deserBlock.WriteLine($"{memberAccess} = new (ref ptr_current, ptr_end{externalMemberValueArgs});");
             }
             deserBlock.WriteLine();
         }

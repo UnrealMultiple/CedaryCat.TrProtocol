@@ -55,12 +55,21 @@ internal static class PolymorphicStaticDeserializeEmitter
                         source.WriteLine("public static abstract int GlobalID { get; }");
                     }
 
-                    source.Write($"public unsafe static {polymorphicBase.TypeName} Read{polymorphicBase.TypeName}(ref void* ptr{(polymorphicBase.IsNetPacket ? ", void* ptr_end" : "")}{(polymorphicBase.IsNetPacket ? ", bool isServerSide" : "")}{externalMemberParams}) ");
+                    source.Write($"public unsafe static {polymorphicBase.TypeName} Read{polymorphicBase.TypeName}(ref void* ptr, void* ptr_end{(polymorphicBase.IsNetPacket ? ", bool isServerSide" : "")}{externalMemberParams}) ");
                     source.BlockWrite((source) => {
                         if (polymophic.Is7BitEncoded) {
-                            source.WriteLine($"{enumType.Name} identity = ({enumType.Name})CommonCode.Read7BitEncodedInt(ref ptr);");
+                            source.WriteLine("#if DEBUG");
+                            source.WriteLine($"{enumType.Name} identity = ({enumType.Name})CommonCode.Read7BitEncodedInt(ref ptr, ptr_end, nameof({polymorphicBase.TypeName}), \"Discriminator\");");
+                            source.WriteLine("#else");
+                            source.WriteLine($"{enumType.Name} identity = ({enumType.Name})CommonCode.Read7BitEncodedInt(ref ptr, ptr_end);");
+                            source.WriteLine("#endif");
                         }
                         else {
+                            source.WriteLine("#if DEBUG");
+                            source.WriteLine($"CommonCode.EnsureReadable(ptr, ptr_end, sizeof({enumType.EnumUnderlyingType}), nameof({polymorphicBase.TypeName}), \"Discriminator\");");
+                            source.WriteLine("#else");
+                            source.WriteLine($"CommonCode.EnsureReadable(ptr, ptr_end, sizeof({enumType.EnumUnderlyingType}));");
+                            source.WriteLine("#endif");
                             source.WriteLine($"{enumType.Name} identity = ({enumType.Name})Unsafe.Read<{enumType.EnumUnderlyingType}>(ptr);");
                             source.WriteLine($"ptr = Unsafe.Add<{enumType.EnumUnderlyingType}>(ptr, 1);");
                         }
@@ -71,10 +80,10 @@ internal static class PolymorphicStaticDeserializeEmitter
                                 var packet = match.Value;
                                 if (packet is not null) {
                                     if (packet.IsPolymorphic) {
-                                        source.WriteLine($"case {enumType.Name}.{enumValue.Name}: return {packet.TypeName}.Read{packet.TypeName}(ref ptr{(polymorphicBase.IsNetPacket ? ", ptr_end" : "")}{(polymorphicBase.IsNetPacket ? ", isServerSide" : "")}{externalMemberParamsCall});");
+                                        source.WriteLine($"case {enumType.Name}.{enumValue.Name}: return {packet.TypeName}.Read{packet.TypeName}(ref ptr, ptr_end{(polymorphicBase.IsNetPacket ? ", isServerSide" : "")}{externalMemberParamsCall});");
                                     }
                                     else {
-                                        source.WriteLine($"case {enumType.Name}.{enumValue.Name}: return new {packet.TypeName}(ref ptr{(packet.IsLengthAware ? ", ptr_end" : "")}{(packet.IsSideSpecific ? ", isServerSide" : "")}{externalMemberParamsCall});");
+                                        source.WriteLine($"case {enumType.Name}.{enumValue.Name}: return new {packet.TypeName}(ref ptr, ptr_end{(packet.IsSideSpecific ? ", isServerSide" : "")}{externalMemberParamsCall});");
                                     }
                                 }
                             }
@@ -87,4 +96,3 @@ internal static class PolymorphicStaticDeserializeEmitter
         }
     }
 }
-

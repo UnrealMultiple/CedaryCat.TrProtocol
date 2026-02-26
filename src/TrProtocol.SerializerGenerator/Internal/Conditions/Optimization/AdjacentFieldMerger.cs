@@ -60,16 +60,15 @@ public static class AdjacentFieldMerger
 
         foreach (var (member, condition, parentVar) in members) {
             if (condition.IsEmpty) {
-                // Unconditional member: close the current block and emit an unconditional block.
-                if (currentBlock != null) {
-                    blocks.Add(currentBlock);
-                    currentBlock = null;
+                // Unconditional members should be merged when adjacent.
+                if (currentBlock is null || !currentBlock.Condition.IsEmpty) {
+                    if (currentBlock != null) {
+                        blocks.Add(currentBlock);
+                    }
+                    currentBlock = new ConditionBlock(EmptyConditionNode.Instance);
                 }
 
-                // Create an empty-condition block.
-                var emptyBlock = new ConditionBlock(EmptyConditionNode.Instance);
-                emptyBlock.Members.Add(new MemberInBlock(member, EmptyConditionNode.Instance, parentVar));
-                blocks.Add(emptyBlock);
+                currentBlock.Members.Add(new MemberInBlock(member, EmptyConditionNode.Instance, parentVar));
                 continue;
             }
 

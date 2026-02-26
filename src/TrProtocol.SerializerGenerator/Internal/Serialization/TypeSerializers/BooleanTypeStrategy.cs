@@ -15,6 +15,7 @@ public class BooleanTypeStrategy : ITypeSerializerStrategy
 
     public void GenerateSerialization(TypeSerializerContext context, BlockNode seriBlock, BlockNode deserBlock) {
         var memberAccess = context.MemberAccess;
+        var member = context.Member;
 
         seriBlock.WriteLine($"Unsafe.Write(ptr_current, {memberAccess} ? (byte)1 : (byte)0);");
         seriBlock.WriteLine("ptr_current = Unsafe.Add<byte>(ptr_current, 1);");

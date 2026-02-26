@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ArraySizeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\C2SOnlyAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\Int7BitEncodedAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\LengthPrefixedArrayAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\CompressAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ConditionArrayAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ConditionAttribute.cs" />
@@ -25,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ExternalMemberAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ExternalMemberValueSetterAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\GenerateGlobalIDAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Attributes\IncludeSerializeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\IgnoreSerializeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\ImplementationClaimAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\InitDefaultValueAttribute.cs" />
@@ -34,6 +36,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SerializeAsAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\SparseArrayAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attributes\TerminatedArrayAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ProtocolArrayIndexException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ProtocolBoundsExceededException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ProtocolParseException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ProtocolVarIntFormatException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\UnknownDiscriminatorException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IAutoSerializable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IBinarySerializable.cs" />

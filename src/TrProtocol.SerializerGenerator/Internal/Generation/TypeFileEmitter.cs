@@ -67,27 +67,19 @@ internal static class TypeFileEmitter
                     classNode.WriteLine($"public bool {nameof(ISideSpecific.IsServerSide)} {{ get; set; }}");
                 }
 
-                if (model.IsLengthAware) {
-                    if (model.HasExtraData) {
-                        classNode.WriteLine($"public byte[] {nameof(IExtraData.ExtraData)} {{ get; set; }} = [];");
+                if (model.HasExtraData) {
+                    classNode.WriteLine($"public byte[] {nameof(IExtraData.ExtraData)} {{ get; set; }} = [];");
+                }
+                classNode.Write($"public {model.TypeName}(ref void* ptr, void* ptr_end{(model.IsSideSpecific ? ", bool isServerSide" : "")}{externalMemberParams})");
+                classNode.BlockWrite((source) => {
+                    if (model.IsSideSpecific) {
+                        source.WriteLine($"{nameof(ISideSpecific.IsServerSide)} = isServerSide;");
                     }
-                    classNode.Write($"public {model.TypeName}(ref void* ptr, void* ptr_end{(model.IsSideSpecific ? ", bool isServerSide" : "")}{externalMemberParams})");
-                    classNode.BlockWrite((source) => {
-                        source.WriteLine($"ReadContent(ref ptr, ptr_end);");
-                    });
-                }
-                else {
-                    classNode.Write($"public {model.TypeName}(ref void* ptr{(model.IsSideSpecific ? ", bool isServerSide" : "")}{externalMemberParams})");
-                    classNode.BlockWrite((source) => {
-                        if (model.IsSideSpecific) {
-                            source.WriteLine($"{nameof(ISideSpecific.IsServerSide)} = isServerSide;");
-                        }
-                        foreach (var m in externalMembers) {
-                            source.WriteLine($"{m.memberName} = _{m.memberName};");
-                        }
-                        source.WriteLine($"ReadContent(ref ptr);");
-                    });
-                }
+                    foreach (var m in externalMembers) {
+                        source.WriteLine($"{m.memberName} = _{m.memberName};");
+                    }
+                    source.WriteLine($"ReadContent(ref ptr, ptr_end);");
+                });
 
                 if (model.PacketAutoSeri) {
                     List<SerializationExpandContext> defaults = new(model.Members.Count);
@@ -187,7 +179,11 @@ internal static class TypeFileEmitter
                         writeNode.WriteLine("ptr_current = ptr_rawdata;");
 
                         readNode.WriteLine("var ptr_current = ptr_decompressed;");
-                        readNode.WriteLine($"CommonCode.ReadDecompressedData(ptr, ref ptr_current, (int)((long)ptr_end - (long)ptr));");
+                        readNode.WriteLine($"var ptr_decompressed_end = Unsafe.Add<byte>(ptr_decompressed, {model.CompressData.bufferSize});");
+                        GenerationHelpers.WriteDebugRelease(
+                            readNode,
+                            $"CommonCode.ReadDecompressedData(ptr, ref ptr_current, ptr_decompressed_end, (int)((long)ptr_end - (long)ptr), nameof({model.TypeName}), \"CompressedPayload\");",
+                            "CommonCode.ReadDecompressedData(ptr, ref ptr_current, ptr_decompressed_end, (int)((long)ptr_end - (long)ptr));");
                         readNode.WriteLine("ptr_current = ptr_decompressed;");
 
                         MemberSerializationEmitter.Emit(context, typeSerializerDispatcher, model, modelSym, memberNullables, writeNode, readNode, transform);
@@ -209,6 +205,7 @@ internal static class TypeFileEmitter
                         writeNode.WriteLine($"ptr_current = Unsafe.Add<byte>(ptr_current, {nameof(IExtraData.ExtraData)}.Length);");
 
                         readNode.WriteLine("var restContentSize = (int)((long)ptr_end - (long)ptr_current);");
+                        readNode.WriteLine($"if (restContentSize < 0) throw new ProtocolBoundsExceededException(nameof({model.TypeName}), nameof({nameof(IExtraData.ExtraData)}), (long)ptr_current, (long)ptr_end, 0);");
                         readNode.WriteLine($"{nameof(IExtraData.ExtraData)} = new byte[restContentSize];");
                         readNode.WriteLine($"Marshal.Copy((IntPtr)ptr_current, {nameof(IExtraData.ExtraData)}, 0, restContentSize);");
                         readNode.WriteLine("ptr = ptr_end;");
@@ -219,7 +216,8 @@ internal static class TypeFileEmitter
                 }
 
                 if (!GenerationHelpers.HasWriteContent(modelSym)) {
-                    classNode.Write($"public unsafe {((model.IsConcreteImpl && !model.IsValueType) ? "override " : "readonly ")}void WriteContent(ref void* ptr) ");
+
+                    classNode.Write($"public unsafe {(model.IsValueType ? "readonly " : model.IsConcreteImpl ? "override " : " ")}void WriteContent(ref void* ptr) ");
                     classNode.Sources.Add(writeNode);
                 }
                 #endregion
@@ -227,34 +225,11 @@ internal static class TypeFileEmitter
                 #region ReadContent
 
                 var hasReadContent = GenerationHelpers.HasReadContent(modelSym);
-                var hasReadContentLengthAware = model.IsLengthAware && GenerationHelpers.HasReadContentLengthAware(modelSym);
 
-                if (model.IsLengthAware) {
-                    if (!hasReadContent) {
-                        classNode.WriteLine("/// <summary>");
-                        classNode.WriteLine("/// This operation is not supported and always throws a System.NotSupportedException.");
-                        classNode.WriteLine("/// </summary>");
-                        classNode.WriteLine($"[Obsolete]");
-                        if ((model.IsConcreteImpl && !model.IsValueType)) {
-                            classNode.WriteLine($"public override void ReadContent(ref void* ptr) => throw new {nameof(NotSupportedException)}();");
-                        }
-                        else {
-                            classNode.WriteLine($"void {nameof(IBinarySerializable)}.ReadContent(ref void* ptr) => throw new {nameof(NotSupportedException)}();");
-                        }
-                    }
-
-                    if (!hasReadContentLengthAware) {
-                        classNode.WriteLine($"[MemberNotNull({string.Join(", ", memberNullables.Select(m => $"nameof({m})"))})]");
-                        classNode.Write($"public unsafe void ReadContent(ref void* ptr, void* ptr_end) ");
-                        classNode.Sources.Add(readNode);
-                    }
-                }
-                else {
-                    if (!hasReadContent) {
-                        classNode.WriteLine($"[MemberNotNull({string.Join(", ", memberNullables.Select(m => $"nameof({m})"))})]");
-                        classNode.Write($"public unsafe {((model.IsConcreteImpl && !model.IsValueType) ? "override " : "")}void ReadContent(ref void* ptr) ");
-                        classNode.Sources.Add(readNode);
-                    }
+                if (!hasReadContent) {
+                    classNode.WriteLine($"[MemberNotNull({string.Join(", ", memberNullables.Select(m => $"nameof({m})"))})]");
+                    classNode.Write($"public unsafe {((model.IsConcreteImpl && !model.IsValueType) ? "override " : "")}void ReadContent(ref void* ptr, void* ptr_end) ");
+                    classNode.Sources.Add(readNode);
                 }
                 #endregion
             });

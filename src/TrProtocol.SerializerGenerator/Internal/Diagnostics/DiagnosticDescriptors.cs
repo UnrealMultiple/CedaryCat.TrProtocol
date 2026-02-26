@@ -44,6 +44,17 @@ public static class DiagnosticDescriptors
         true);
 
     /// <summary>
+    /// SCG43: IncludeSerialize and IgnoreSerialize cannot exist at the same time.
+    /// </summary>
+    public static readonly DiagnosticDescriptor ConflictingIncludeIgnoreSerializeAttributes = new(
+        "SCG43",
+        "Conflicting serialization attributes",
+        "Member '{0}' in type '{1}' cannot declare both IncludeSerializeAttribute and IgnoreSerializeAttribute",
+        Category,
+        DiagnosticSeverity.Error,
+        true);
+
+    /// <summary>
     /// SCG20: ConditionArray can only be used on one-dimensional arrays.
     /// </summary>
     public static readonly DiagnosticDescriptor ArrayConditionOnlyOneDimensional = new(
@@ -283,6 +294,50 @@ public static class DiagnosticDescriptors
         "SCG42",
         "terminated array key SerializeAs not supported",
         "TerminatedArrayAttribute on member '{0}' does not support SerializeAsAttribute on termination key member '{1}' of element type '{2}'",
+        Category,
+        DiagnosticSeverity.Error,
+        true);
+
+    /// <summary>
+    /// SCG44: Length-prefixed arrays only support one-dimensional arrays.
+    /// </summary>
+    public static readonly DiagnosticDescriptor LengthPrefixedArrayRankUnsupported = new(
+        "SCG44",
+        "length-prefixed array rank unsupported",
+        "LengthPrefixedArrayAttribute on member '{0}' only supports one-dimensional arrays",
+        Category,
+        DiagnosticSeverity.Error,
+        true);
+
+    /// <summary>
+    /// SCG45: Length-prefixed array requires an integral prefix type up to uint.
+    /// </summary>
+    public static readonly DiagnosticDescriptor LengthPrefixedArrayInvalidLengthType = new(
+        "SCG45",
+        "invalid length-prefixed array length type",
+        "LengthPrefixedArrayAttribute on member '{0}' requires length type byte/sbyte/short/ushort/int/uint, but was '{1}'",
+        Category,
+        DiagnosticSeverity.Error,
+        true);
+
+    /// <summary>
+    /// SCG46: LengthPrefixedArray and ArraySize cannot be used together.
+    /// </summary>
+    public static readonly DiagnosticDescriptor LengthPrefixedArrayConflictsWithArraySize = new(
+        "SCG46",
+        "conflicting array length attributes",
+        "Member '{0}' cannot declare both LengthPrefixedArrayAttribute and ArraySizeAttribute",
+        Category,
+        DiagnosticSeverity.Error,
+        true);
+
+    /// <summary>
+    /// SCG47: LengthPrefixedArray cannot be combined with array format attributes that define independent framing.
+    /// </summary>
+    public static readonly DiagnosticDescriptor LengthPrefixedArrayUnsupportedCombination = new(
+        "SCG47",
+        "unsupported length-prefixed array attribute combination",
+        "LengthPrefixedArrayAttribute on member '{0}' cannot be combined with {1}",
         Category,
         DiagnosticSeverity.Error,
         true);

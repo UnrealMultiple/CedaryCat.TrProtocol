@@ -48,9 +48,11 @@ public static class ProtocolModelBuilder
                         "",
                         DiagnosticSeverity.Error,
                         true),
-                    defSyntax.GetLocation(),
-                    typeName));
+                defSyntax.GetLocation(),
+                typeName));
         }
+
+        ValidateSerializationAttributeConflicts(modelSym);
 
         var (imports, staticImports) = CollectImports(modelSym);
         var model = new ProtocolTypeData(defSyntax, modelSym, typeName, Namespace, imports, staticImports, info.Members);
@@ -165,6 +167,37 @@ public static class ProtocolModelBuilder
         model.HasSeriInterface = modelSym.AllInterfaces.Any(i => i.Name == nameof(IBinarySerializable));
 
         return model;
+    }
+
+    private static void ValidateSerializationAttributeConflicts(INamedTypeSymbol modelSym) {
+        foreach (var declaration in modelSym.DeclaringSyntaxReferences
+                     .Select(r => r.GetSyntax())
+                     .OfType<TypeDeclarationSyntax>()) {
+            foreach (var member in declaration.Members) {
+                if (!member.AttributeMatch<IncludeSerializeAttribute>(out var includeAttribute)) {
+                    continue;
+                }
+
+                if (!member.AttributeMatch<IgnoreSerializeAttribute>(out var ignoreAttribute)) {
+                    continue;
+                }
+
+                throw new DiagnosticException(
+                    Diagnostic.Create(
+                        DiagnosticDescriptors.ConflictingIncludeIgnoreSerializeAttributes,
+                        includeAttribute?.GetLocation() ?? ignoreAttribute?.GetLocation() ?? member.GetLocation(),
+                        GetMemberName(member),
+                        modelSym.Name));
+            }
+        }
+    }
+
+    private static string GetMemberName(MemberDeclarationSyntax member) {
+        return member switch {
+            FieldDeclarationSyntax field => string.Join(", ", field.Declaration.Variables.Select(v => v.Identifier.Text)),
+            PropertyDeclarationSyntax prop => prop.Identifier.Text,
+            _ => member.ToString()
+        };
     }
 
     private static (string[] imports, string[] staticImports) CollectImports(INamedTypeSymbol modelSym) {

@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using TrProtocol.Attributes;
 using TrProtocol.SerializerGenerator.Internal.Diagnostics;
 using TrProtocol.SerializerGenerator.Internal.Extensions;
+using TrProtocol.SerializerGenerator.Internal.Generation;
 using TrProtocol.SerializerGenerator.Internal.Utilities;
 
 namespace TrProtocol.SerializerGenerator.Internal.Serialization.TypeSerializers;
@@ -63,13 +64,22 @@ public class Int7BitEncodedStrategy : ITypeSerializerStrategy
 
         // Deserialization: read as 7-bit encoded int.
         if (context.RoundState.IsEnumRound) {
-            deserBlock.WriteLine($"{memberAccess} = ({context.RoundState.EnumType.enumType.Name})CommonCode.Read7BitEncodedInt(ref ptr_current);");
+            GenerationHelpers.WriteDebugRelease(
+                deserBlock,
+                $"{memberAccess} = ({context.RoundState.EnumType.enumType.Name})CommonCode.Read7BitEncodedInt(ref ptr_current, ptr_end, nameof({context.Model.TypeName}), \"{m.MemberName}\");",
+                $"{memberAccess} = ({context.RoundState.EnumType.enumType.Name})CommonCode.Read7BitEncodedInt(ref ptr_current, ptr_end);");
         }
         else if (isIntEnum) {
-            deserBlock.WriteLine($"{memberAccess} = ({memberTypeSym.Name})CommonCode.Read7BitEncodedInt(ref ptr_current);");
+            GenerationHelpers.WriteDebugRelease(
+                deserBlock,
+                $"{memberAccess} = ({memberTypeSym.Name})CommonCode.Read7BitEncodedInt(ref ptr_current, ptr_end, nameof({context.Model.TypeName}), \"{m.MemberName}\");",
+                $"{memberAccess} = ({memberTypeSym.Name})CommonCode.Read7BitEncodedInt(ref ptr_current, ptr_end);");
         }
         else {
-            deserBlock.WriteLine($"{memberAccess} = CommonCode.Read7BitEncodedInt(ref ptr_current);");
+            GenerationHelpers.WriteDebugRelease(
+                deserBlock,
+                $"{memberAccess} = CommonCode.Read7BitEncodedInt(ref ptr_current, ptr_end, nameof({context.Model.TypeName}), \"{m.MemberName}\");",
+                $"{memberAccess} = CommonCode.Read7BitEncodedInt(ref ptr_current, ptr_end);");
         }
         deserBlock.WriteLine();
     }

@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using TrProtocol.Interfaces;
 
 namespace TrProtocol.Models;
 
-public partial struct ItemData : IEquatable<ItemData>, IAutoSerializable
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public partial struct ItemData : IEquatable<ItemData>, IPackedSerializable
 {
     public short ItemID;
     public byte Prefix;

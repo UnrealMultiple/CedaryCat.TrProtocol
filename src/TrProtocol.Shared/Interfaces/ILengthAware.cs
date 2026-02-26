@@ -11,15 +11,8 @@
 /// <item>Process trailing variable-length segments (e.g., ExtraData: byte[])</item>
 /// </list>
 /// </remarks>
-public interface ILengthAware
+public interface ILengthAware : IBinarySerializable
 {
-    /// <summary>
-    /// Reads the packet content from the specified memory range
-    /// </summary>
-    /// <param name="ptr">Current read position (updated during parsing)</param>
-    /// <param name="end_ptr">Exclusive end boundary of the available data</param>
-    unsafe void ReadContent(ref void* ptr, void* end_ptr);
-    unsafe void WriteContent(ref void* ptr);
 }
 /// <summary>
 /// Marker interface indicating that the type is not <see cref="ILengthAware"/>.

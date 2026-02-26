@@ -1,6 +1,8 @@
 using Microsoft.CodeAnalysis;
+using TrProtocol.Attributes;
 using TrProtocol.Exceptions;
 using TrProtocol.SerializerGenerator.Internal.Diagnostics;
+using TrProtocol.SerializerGenerator.Internal.Extensions;
 using TrProtocol.SerializerGenerator.Internal.Models;
 
 namespace TrProtocol.SerializerGenerator.Internal.Serialization;
@@ -25,8 +27,13 @@ public static class MemberSymbolResolver
         out ITypeSymbol mTypeSym,
         out IFieldSymbol? fieldMemberSym,
         out IPropertySymbol? propMemberSym) {
-        var fieldsSym = typeSym.GetMembers().OfType<IFieldSymbol>().Where(f => f.DeclaredAccessibility is Accessibility.Public).ToArray();
-        var propertiesSym = typeSym.GetMembers().OfType<IPropertySymbol>().Where(p => p.DeclaredAccessibility is Accessibility.Public).ToArray();
+        var includeNonPublic = m.MemberDeclaration.AttributeMatch<IncludeSerializeAttribute>();
+        var fieldsSym = typeSym.GetMembers().OfType<IFieldSymbol>()
+            .Where(f => includeNonPublic || f.DeclaredAccessibility is Accessibility.Public)
+            .ToArray();
+        var propertiesSym = typeSym.GetMembers().OfType<IPropertySymbol>()
+            .Where(p => includeNonPublic || p.DeclaredAccessibility is Accessibility.Public)
+            .ToArray();
 
         propMemberSym = propertiesSym.FirstOrDefault(p => p.Name == m.MemberName);
         fieldMemberSym = fieldsSym.FirstOrDefault(f => f.Name == m.MemberName);
