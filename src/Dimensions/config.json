@@ -1,0 +1,17 @@
+{
+  "listenPort": 7654,
+  "protocolVersion": "Terraria319",
+  "sendDimensionPacket": false,
+  "servers": [
+    {
+      "name": "a",
+      "serverIP": "127.0.0.1",
+      "serverPort": 7777
+    },
+    {
+      "name": "b",
+      "serverIP": "127.0.0.1",
+      "serverPort": 7778
+    }
+  ]
+}

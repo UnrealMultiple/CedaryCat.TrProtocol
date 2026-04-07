@@ -6,34 +6,37 @@ namespace TrProtocol;
 public class PacketSerializer(bool client)
 {
     public bool Client { get; } = client;
-    
+
     public byte[] Serialize(INetPacket p)
     {
         using var ms = new MemoryStream();
         using var bw = new BinaryWriter(ms);
-        
+
         bw.Write((ushort)0);
 
         var tempBuffer = ArrayPool<byte>.Shared.Rent(ushort.MaxValue);
-        int contentLen;
-
-        unsafe
+        try
         {
-            fixed (byte* pTemp = tempBuffer)
+            unsafe
             {
-                void* ptr = pTemp;
-                p.WriteContent(ref ptr);
-                contentLen = (int)((byte*)ptr - pTemp);
-            }
-        }
-        
-        bw.BaseStream.Position = 0;
-        bw.Write((ushort)(contentLen + 2));
-        bw.Write(tempBuffer, 0, contentLen);
+                fixed (byte* pTemp = tempBuffer)
+                {
+                    void* ptr = pTemp;
+                    p.WriteContent(ref ptr);
+                    int contentLen = (int)((byte*)ptr - pTemp);
 
-        var data = ms.ToArray();
-        ArrayPool<byte>.Shared.Return(data);
-        return data;
+                    ms.Position = 0;
+                    bw.Write((ushort)(contentLen + 2));
+                    bw.Write(tempBuffer, 0, contentLen);
+                }
+            }
+
+            return ms.ToArray();
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(tempBuffer);
+        }
     }
 
     public INetPacket Deserialize(BinaryReader br0)
