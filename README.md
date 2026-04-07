@@ -22,7 +22,7 @@ src/
 Terraria 协议的核心实现：
 - 完整的数据包定义
 - 高效的序列化/反序列化
-- 支持 Terraria 1.4.4.9 (Protocol 319)
+- 支持 Terraria 1.4.5 (Protocol 319)
 
 ### Dimensions (代理服务器)
 
