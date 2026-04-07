@@ -32,7 +32,7 @@ Terraria 协议的核心实现：
 - 实体同步管理
 - /server 命令
 
-详细文档：[src/Dimensions/README.md](Dimensions/README.md)
+详细文档：[Dimensions](srcDimensions/README.md)
 
 ## 快速开始
 
