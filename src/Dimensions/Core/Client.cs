@@ -29,6 +29,7 @@ public class Client
         _client.Send(packet);
     }
 
+    
     public void SendChatMessage(string literal)
     {
         SendClient(new NetTextModule
@@ -41,7 +42,6 @@ public class Client
             }
         });
     }
-
     public void SendServer(INetPacket packet)
     {
         //Console.WriteLine($"Send To Server: {packet}");

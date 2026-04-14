@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using TrProtocol.Attributes;
 using TrProtocol.Interfaces;
@@ -12,6 +12,49 @@ public partial interface INetPacket : IAutoSerializable
     public abstract MessageID Type { get; }
     public string? ToString() {
         return $"{{{Type}}}";
+    }
+
+    // 不换行的属性打印
+    public string ToStringInline()
+    {
+        var type = GetType();
+        var sb = new StringBuilder();
+        sb.Append($"[{type.Name}] {{ ");
+        
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        
+        var fields = type.GetFields(flags)
+            .Where(f => !f.Name.Contains("k__BackingField"));
+
+        var properties = type.GetProperties(flags)
+            .Where(p => p.CanRead && p.GetIndexParameters().Length == 0);
+        
+        var members = fields
+            .Select<FieldInfo, (string name, object value)>(f => (f.Name, f.GetValue(this)!))
+            .Concat(properties.Select<PropertyInfo, (string name, object value)>(p => (p.Name, p.GetValue(this)!)))
+            .Where(m => m.name != "Type" && m.name != "ModuleType");
+
+        bool first = true;
+        foreach (var (name, value) in members)
+        {
+            if (!first) sb.Append(", ");
+            first = false;
+            
+            var formattedValue = value switch
+            {
+                null => "null",
+                byte[] bytes => $"byte[{bytes.Length}]",
+                Array arr => $"{arr.GetType().GetElementType()?.Name}[{arr.Length}]",
+                string s => $"\"{s}\"",
+                bool b => b.ToString().ToLower(),
+                _ => value.ToString()
+            } ?? string.Empty;
+
+            sb.Append($"{name}={formattedValue}");
+        }
+
+        sb.Append(" }");
+        return sb.ToString();
     }
 
     public string Describe(int indentLevel = 0)

@@ -81,11 +81,11 @@ dotnet run
 
 ## 命令
 
-| 命令               | 描述        |
-| ---------------- | --------- |
-| `/server`        | 显示可用服务器列表 |
-| `/server <name>` | 切换到指定服务器  |
-| `/server list`   | 显示可用服务器列表 |
+| 命令 | 描述 |
+|------|------|
+| `/server` | 显示可用服务器列表 |
+| `/server <name>` | 切换到指定服务器 |
+| `/server list` | 显示可用服务器列表 |
 
 ## 架构说明
 
@@ -98,33 +98,25 @@ dotnet run
 ### 核心组件
 
 #### Client
-
 管理单个客户端连接，包含：
-
 - 客户端连接 (`_client`)
 - 服务端连接 (`_serverConnection`)
 - 数据包隧道 (`c2s`, `s2c`)
 - 处理器列表 (`handlers`)
 
 #### Tunnel
-
 负责在两个 PacketClient 之间转发数据包：
-
 - C2S (Client to Server): 客户端到服务端
 - S2C (Server to Client): 服务端到客户端
 
 #### PacketClient
-
 封装 TcpClient，提供数据包级别的读写：
-
 - 使用 PacketSerializer 序列化/反序列化数据包
 - 支持自定义 DimensionUpdate 数据包
 - 处理 ISideSpecific 接口
 
 #### ClientHandler
-
 处理器基类，提供以下事件：
-
 - `OnCommonPacket`: 通用数据包处理
 - `OnS2CPacket`: 服务端到客户端数据包处理
 - `OnC2SPacket`: 客户端到服务端数据包处理
@@ -133,13 +125,11 @@ dotnet run
 ### 自定义数据包
 
 DimensionUpdate 是一个自定义数据包，用于：
-
 - 传递客户端真实 IP 地址
 - 请求服务器切换
 - 自定义服务器连接
 
 数据包结构：
-
 ```
 MessageID: Unused67 (67)
 SubType: SubMessageID
@@ -154,26 +144,26 @@ Port: ushort (可选，取决于 SubType)
 
 ## 处理器说明
 
-| 处理器                 | 功能                     |
-| ------------------- | ---------------------- |
-| CommandHandler      | 处理 /server 命令          |
-| ConnectionHandler   | 处理连接初始化、玩家同步           |
+| 处理器 | 功能 |
+|--------|------|
+| CommandHandler | 处理 /server 命令 |
+| ConnectionHandler | 处理连接初始化、玩家同步 |
 | CustomPacketHandler | 处理 DimensionUpdate 数据包 |
-| NpcHandler          | 追踪 NPC 状态，切换时清理        |
-| ProjectileHandler   | 追踪投射物状态，切换时清理          |
-| PlayerHandler       | 追踪其他玩家状态，切换时清理         |
-| ItemHandler         | 追踪物品状态，切换时清理           |
-| PylonHandler        | 追踪传送塔状态，切换时清理          |
-| SSCHandler          | 处理服务器端角色数据             |
+| NpcHandler | 追踪 NPC 状态，切换时清理 |
+| ProjectileHandler | 追踪投射物状态，切换时清理 |
+| PlayerHandler | 追踪其他玩家状态，切换时清理 |
+| ItemHandler | 追踪物品状态，切换时清理 |
+| PylonHandler | 追踪传送塔状态，切换时清理 |
+| SSCHandler | 处理服务器端角色数据 |
 
 ## 依赖
 
 - .NET 10.0
 - TrProtocol (自定义协议库)
 - Newtonsoft.Json
+- XNA Framework (Terraria 依赖)
 
 ## 相关文档
 
 - [架构文档](docs/ARCHITECTURE.md)
 - [配置文档](docs/CONFIG.md)
-

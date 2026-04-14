@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.IO.Pipelines;
 using Terraria;
 
 namespace TrProtocol;
@@ -42,19 +43,19 @@ public class PacketSerializer(bool client)
     public INetPacket Deserialize(BinaryReader br0)
     {
         ushort totalLength = br0.ReadUInt16();
-     
+
         int payloadLen = totalLength - 2;
         if (payloadLen < 0) throw new Exception("Invalid packet length");
 
         byte[] payload = br0.ReadBytes(payloadLen);
-        
+
         unsafe
         {
             fixed (byte* pPayload = payload)
             {
                 void* ptr = pPayload;
                 byte* end = pPayload + payloadLen;
-                
+
                 return INetPacket.ReadINetPacket(ref ptr, end, !Client);
             }
         }

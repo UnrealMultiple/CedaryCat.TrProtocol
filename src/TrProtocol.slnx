@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Dimensions/Dimensions.csproj" />
+  <Project Path="RealmNexus/RealmNexus.csproj" Id="6287010b-5bab-4a3d-9a74-570b9e8a41dc" />
   <Project Path="TrClient/TrClient.csproj" />
   <Project Path="TrProtocol.SerializerGenerator/TrProtocol.SerializerGenerator.csproj" />
   <Project Path="TrProtocol.Shared/TrProtocol.Shared.shproj" Id="768417b4-d342-4006-b196-5f7178582209" />

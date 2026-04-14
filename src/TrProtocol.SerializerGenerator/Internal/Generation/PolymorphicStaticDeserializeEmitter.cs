@@ -52,7 +52,7 @@ internal static class PolymorphicStaticDeserializeEmitter
 
                     if (polymorphicBase.IsGlobalIDRoot) {
                         source.WriteLine($"public const int GlobalIDCount = {polymorphicBase.AllocatedGlobalIDCount};");
-                        source.WriteLine("public static abstract int GlobalID { get; }");
+                        source.WriteLine("public static virtual int GlobalID { get; }");
                     }
 
                     source.Write($"public unsafe static {polymorphicBase.TypeName} Read{polymorphicBase.TypeName}(ref void* ptr, void* ptr_end{(polymorphicBase.IsNetPacket ? ", bool isServerSide" : "")}{externalMemberParams}) ");

@@ -1,4 +1,4 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.IO.Compression;
 using TrProtocol.Attributes;
 using TrProtocol.Interfaces;
@@ -7,7 +7,7 @@ using TrProtocol.Models.TileEntities;
 namespace TrProtocol.Models;
 
 [ExplicitImportType(typeof(ArrayPool<byte>))]
-[Compress(CompressionLevel.SmallestSize, 1024 * 128)]
+[Compress(CompressionLevel.SmallestSize, 1024 * 256)]
 public partial struct SectionData : IAutoSerializable, ILengthAware
 {
     public int StartX;
