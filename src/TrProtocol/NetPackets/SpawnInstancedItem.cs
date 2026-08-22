@@ -1,13 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using TrProtocol.Models.Interfaces;
 using Terraria;
 using TrProtocol.Attributes;
+using TrProtocol.Models.Interfaces;
 
 namespace TrProtocol.NetPackets;
 
-public partial struct SyncItem : INetPacket, IItemSlot
+public partial struct SpawnInstancedItem : INetPacket, IItemSlot
 {
-    public readonly MessageID Type => MessageID.SyncItem;
+    public readonly MessageID Type => MessageID.SpawnInstancedItem;
     public short ItemSlot { get; set; }
     public Vector2 Position;
     public Vector2 Velocity;

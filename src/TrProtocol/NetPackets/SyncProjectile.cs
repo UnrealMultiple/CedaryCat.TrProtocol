@@ -2,17 +2,16 @@
 using Terraria;
 using TrProtocol.Attributes;
 using TrProtocol.Models.Interfaces;
+using Terraria.DataStructures;
 
 namespace TrProtocol.NetPackets;
 
-public partial struct SyncProjectile : INetPacket, IProjSlot, IPlayerSlot
+public partial struct SyncProjectile : INetPacket
 {
     public readonly MessageID Type => MessageID.SyncProjectile;
-    public short ProjSlot { get; set; }
+    public ProjectileKey Key;
     public Vector2 Position;
     public Vector2 Velocity;
-    public byte PlayerSlot { get; set; }
-    //[Bounds("Terraria238", 955)]
     public short ProjType;
     public BitsByte Bit1;
     [Condition(nameof(Bit1), 2)]
@@ -29,9 +28,6 @@ public partial struct SyncProjectile : INetPacket, IProjSlot, IPlayerSlot
     public float Knockback;
     [Condition(nameof(Bit1), 6)]
     public short OriginalDamage;
-    [Condition(nameof(Bit1), 7)]
-    public short UUID;
     [Condition(nameof(Bit2), 0)]
     public float AI3;
-
 }

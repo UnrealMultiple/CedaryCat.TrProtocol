@@ -3,8 +3,10 @@
 public enum LeashedEntityPrototype : int {
     LeashedKite = 1,
     WalkerLeashedCritter,
+    AquaticWalkerLeashedCritter,
     CrawlerLeashedCritter,
     SnailLeashedCritter,
+    TurtleLeashedCritter,
     RunnerLeashedCritter,
     FlyerLeashedCritter,
     NormalButterflyLeashedCritter,

@@ -2,6 +2,9 @@
 
 public static class Constants
 {
+    public const int ProtocolVersion = 325;
+    public const string VersionString = "Terraria325";
+
     public static readonly bool[] tileFrameImportant = Create(753, true,
         3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 24, 26, 27, 28, 
         29, 31, 33, 34, 35, 36, 42, 49, 50, 55, 61, 71, 72, 73, 74, 77, 78, 79, 81, 

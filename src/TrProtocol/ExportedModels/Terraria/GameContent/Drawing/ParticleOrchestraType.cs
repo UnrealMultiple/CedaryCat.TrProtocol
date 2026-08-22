@@ -70,5 +70,18 @@ public enum ParticleOrchestraType : byte
     InScreenDungeonSpawn,
     CattivaHit,
     PaladinsHammerShockwave,
+    SnappingStone,
+    HarpyCharm,
+    ArcSurge,
+    FormatC,
+    SporeCloud,
+    SnappingStoneMelee,
+    SnappingStoneSummon,
+    PhoenixQuiver,
+    RedLightningSmall,
+    SeraphNecklace,
+    SnappingStoneRecharge,
+    PyroclasticStoneRecharge,
+    ArmletOfRuinRecharge,
     Count
 }

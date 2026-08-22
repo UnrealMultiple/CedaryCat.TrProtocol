@@ -34,6 +34,10 @@ public struct PlayerControlData : IPackedSerializable
         get => packedValue[6];
         set => packedValue[6] = value;
     }
+    public bool ControlDash {
+        get => packedValue[7];
+        set => packedValue[7] = value;
+    }
     
     public override string ToString() {
         var active = new List<string>();
@@ -43,6 +47,7 @@ public struct PlayerControlData : IPackedSerializable
         if (ControlRight) active.Add("Right");
         if (ControlJump) active.Add("Jump");
         if (IsUsingItem) active.Add("UsingItem");
+        if (ControlDash) active.Add("Dash");
     
         string dir = FaceDirection ? "Right" : "Left";
         return $"{{Controls: [{string.Join("|", active)}], Face: {dir}}}";
@@ -184,6 +189,10 @@ public struct PlayerMiscData3 : IPackedSerializable
         get => packedValue[6];
         set => packedValue[6] = value;
     }
+    public bool SnappingStoneLightUp {
+        get => packedValue[7];
+        set => packedValue[7] = value;
+    }
     
     public override string ToString() {
         var states = new List<string>();
@@ -193,6 +202,7 @@ public struct PlayerMiscData3 : IPackedSerializable
         if (IsOperatingAnotherEntity) states.Add("OperatingEntity");
         if (HasNetCameraTarget) states.Add("CamTargeted");
         if (LastItemUseAttemptSuccess) states.Add("UseSuccess");
+        if (SnappingStoneLightUp) states.Add("SnappingStoneLightUp");
 
         return $"{(states.Count > 0 ? string.Join(", ", states) : "None")}";
     }

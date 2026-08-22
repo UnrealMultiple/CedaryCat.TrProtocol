@@ -8,8 +8,9 @@ namespace TrProtocol.NetPackets;
 public partial struct SyncNPC : INetPacket, IExtraData
 {
     public readonly MessageID Type => MessageID.SyncNPC;
-    public short NPCSlot;
-    public Vector2 Offset;
+    public byte NPCSlot;
+    public byte Generation;
+    public Vector2 AnchoredPosition;
     [InitDefaultValue]
     public Vector2 Velocity;
     [InitDefaultValue]

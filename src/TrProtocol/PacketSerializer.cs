@@ -1,4 +1,4 @@
-using System.Buffers;
+﻿using System.Buffers;
 using Terraria;
 
 namespace TrProtocol;
@@ -35,10 +35,9 @@ public class PacketSerializer(bool client)
 
             return ms.ToArray();
         }
-        catch
+        finally
         {
-            ArrayPool<byte>.Shared.Return(tempBuffer, clearArray: false); // zeroing a ~64 KB buffer every time is too expensive.
-            throw;
+            ArrayPool<byte>.Shared.Return(tempBuffer);
         }
     }
 

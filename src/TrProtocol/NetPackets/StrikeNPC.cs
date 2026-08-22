@@ -2,10 +2,11 @@
 
 namespace TrProtocol.NetPackets;
 
-public partial struct StrikeNPC : INetPacket, INPCSlot
+public partial struct StrikeNPC : INetPacket
 {
     public readonly MessageID Type => MessageID.StrikeNPC;
-    public short NPCSlot { get; set; }
+    public byte NPCSlot;
+    public byte NPCGeneration;
     public short Damage;
     public float Knockback;
     public byte HitDirection;
